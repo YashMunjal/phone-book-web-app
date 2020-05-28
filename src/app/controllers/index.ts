@@ -10,12 +10,13 @@ import {
   contactExists
 
 } from '../../services/user.service';
+import logger from '../../services/logger';
 
 export async function handleGetAllContacts(req: Request, res: Response) {
   try {
     res.json(await getAllUsers());
   } catch (error) {
-    console.log(error)
+    logger.error(error)
   }
 }
 
@@ -40,6 +41,18 @@ export async function handleCreateContact(req: Request, res: Response) {
     
 
   } catch (error) {
-    console.log(error)
+    logger.error(error)
+  }
+}
+
+export async function handleGetContactByGet(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    if(!id) return res.status(400).json({error: 'Invalid ID'});
+    const user = await getUserById(id);
+    if(!user) res.status(404).json({error: 'Invalid ID'});
+    return res.status(200).json(user);
+  } catch (error) {
+    logger.error(error)
   }
 }

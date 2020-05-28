@@ -1,10 +1,11 @@
 import {Router} from 'express';
-import { handleGetAllContacts, handleCreateContact } from '../controllers';
+import { handleGetAllContacts, handleCreateContact, handleGetContactByGet } from '../controllers';
 
 const router = Router();
 
 // GET Routes
 router.get('/contacts', handleGetAllContacts);
+router.get('/contact/:id', handleGetContactByGet);
 
 
 // POST Routes
