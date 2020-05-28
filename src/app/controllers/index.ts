@@ -56,3 +56,45 @@ export async function handleGetContactByGet(req: Request, res: Response) {
     logger.error(error)
   }
 }
+
+export async function handleAddContact(req: Request, res: Response){
+  try {
+    const {userId, contactNumber} = req.body;
+    if(!userId || !contactNumber) return res.status(400).json({error: 'Invalid ID'});
+    const user = await getUserById(userId);
+    if(!user) return res.status(400).json({error: 'Invalid ID'});
+    const userObj: UserObject = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      id: user.id
+    }
+    const updatedUser = await insertNumber(userObj, contactNumber);
+
+    return res.status(200).json({user: updatedUser});
+
+
+  } catch (error) {
+    logger.error(error)
+  }
+}
+
+export async function handleAddEmail(req: Request, res: Response){
+  try {
+    const {userId, email} = req.body;
+    if(!userId || !email) return res.status(400).json({error: 'Invalid ID'});
+    const user = await getUserById(userId);
+    if(!user) return res.status(400).json({error: 'Invalid ID'});
+    const userObj: UserObject = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      id: user.id
+    }
+    const updatedUser = await insertEmail(userObj, email);
+
+    return res.status(200).json({user: updatedUser});
+
+    
+  } catch (error) {
+    logger.error(error)
+  }
+}
