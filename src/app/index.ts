@@ -1,5 +1,6 @@
 import express from 'express';
 import indexRouter from './routes';
+import path from 'path';
 import { Model } from 'objection'
 import * as config from '../knex';
 class App {
@@ -22,6 +23,7 @@ export function createServer() {
 
   // Middlewares
   app.use(express.json());
+  app.use(express.static(path.resolve('./public')));
 
   // Routes
   app.use('/api', indexRouter);
