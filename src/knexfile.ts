@@ -1,7 +1,7 @@
 // Update with your config settings.
-const { knexSnakeCaseMappers } = require('objection');
+import { knexSnakeCaseMappers } from 'objection';
 
-module.exports = {
+export const config = {
 
   development: {
     client: 'pg',

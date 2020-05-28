@@ -2,24 +2,34 @@ import { raw } from 'objection';
 import { User } from '../models/user.model';
 import { Contacts } from '../models/contacts.model';
 import { Email } from '../models/email.model';
+import logger from './logger';
 
-export async function createContact(user: User): Promise<User | Error> {
+export interface UserObject {
+  id: string;
+  firstName: string;
+  lastName?: string;
+}
+
+export async function createUser(user: UserObject) {
   try{
-    if(!user) return new Error('User missing');
-
+    if(!user) return logger.error('User missing');
     const createdUser = await User.query().insert(user);
-    return createdUser;
+    return {
+      id: createdUser.id,
+      firstName: createdUser.firstName,
+      lastName: createdUser.lastName
+    };
   }
   catch(err){
-    return new Error(err);
+    logger.error(err);
   }
 }
 
-export async function insertNumber(user: User, number: string) {
+export async function insertNumber(user: UserObject, number: string) {
   try{
     await Contacts.query().insert({
       userId: user.id,
-      contactNumber: number,
+      number: number,
     });
     const updatedUser = {
       ...user,
@@ -29,11 +39,11 @@ export async function insertNumber(user: User, number: string) {
     return updatedUser
   }
   catch(err){
-    return new Error(err);
+    logger.error(err);
   }
 }
 
-export async function insertEmail(user: User, email: string) {
+export async function insertEmail(user: UserObject, email: string) {
   try {
     await Email.query().insert({
       userId: user.id,
@@ -49,7 +59,7 @@ export async function insertEmail(user: User, email: string) {
     return updatedUser;
 
   } catch (err) {
-    return new Error(err);
+    logger.error(err);
   }
 } 
 
@@ -57,15 +67,20 @@ export async function getAllUsers() {
   try {
       return await User.query().orderBy('firstName')
   } catch (err) {
-    return new Error(err);
+    logger.error(err);
   }
 }
 
 export async function getUserById(id: string) {
   try {
-    return await User.query().findById(id);
+    const user =  await User.query().findById(id);
+    return {
+      ...user,
+      contacts: await Contacts.query().where('userId', user.id),
+      emails: await Email.query().where('userId', user.id),
+    }
   } catch (err) {
-    return new Error(err);
+    logger.error(err);
   }
 }
 
@@ -73,7 +88,7 @@ export async function getUserByEmail(email: string) {
   try {
     return await Email.query().where('email', email).withGraphFetched('user').orderBy('user.firstName');
   } catch (err) {
-    return new Error(err);
+    logger.error(err);
   }
 }
 
@@ -81,7 +96,7 @@ export async function getUserByContact(number: string) {
   try {
     return await Contacts.query().where('contactNumber', number).withGraphFetched('user').orderBy('user.firstName');
   } catch (err) {
-    return new Error(err);
+    logger.error(err);
   }
 }
 
@@ -89,18 +104,28 @@ export async function findUserByName(pattern: string) {
   try { 
     return await User.query().where(builder => {
       builder
-      .where(raw('firstName ~ ?', /pattern/g ))
-      .orWhere(raw('lastName ~ ?', /pattern/g ))
+      .where(raw('firstName ~ ?', pattern ))
+      .orWhere(raw('lastName ~ ?', pattern ))
     });
   } catch (err) {
-    return new Error(err);
+    logger.error(err);
   }
 }
 
 export async function findUserByContact(pattern: string) {
   try { 
-    return await Contacts.query().where(raw('number ~ ?', /pattern/g)).withGraphFetched('user');
+    return await Contacts.query().where(raw('number ~ ?', pattern)).withGraphFetched('user');
   } catch (err) {
-    return new Error(err);
+    logger.error(err);
+  }
+}
+
+export async function contactExists(number: string) {
+  try {
+    const contacts = (await Contacts.query().where('number', number)).length;
+    if(contacts === 0) return false;
+    return true;
+  } catch (error) {
+    logger.error(error);
   }
 }

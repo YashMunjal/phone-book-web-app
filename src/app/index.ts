@@ -1,5 +1,7 @@
 import express from 'express';
-
+import indexRouter from './routes';
+import { Model } from 'objection'
+import * as config from '../knex';
 class App {
   private app: Express.Application
 
@@ -16,6 +18,13 @@ export function createServer() {
   const app: express.Application = express();
   const server = new App(app);
 
+  Model.knex(config.default);
+
+  // Middlewares
+  app.use(express.json());
+
+  // Routes
+  app.use('/api', indexRouter);
   return server
 
 }

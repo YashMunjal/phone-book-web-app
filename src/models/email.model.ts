@@ -10,6 +10,10 @@ export class Email extends Model {
     return 'emails'
   }
 
+  static get idColumn() {
+    return 'email';
+  }
+
   static get relationMappings() {
     return {
       user: {

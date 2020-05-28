@@ -5,19 +5,16 @@ export class User extends Model {
 
   id: string;
 
-  firstName?: String;
+  firstName: string;
 
-  lastName?: String;
-
-  contactNumber?: number[];
-  
-  email?: string[];
+  lastName?: string;
 
   createdAt?: Date;
 
   constructor(){
     super();
     this.id = uuidv4();
+    this.firstName = '';
   }
 
   $beforeInsert() {
