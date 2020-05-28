@@ -20,8 +20,8 @@ export class Email extends Model {
         relation: Model.HasManyRelation,
         modelClass: User,
         join: {
-          from: 'email.user_id',
-          to: 'users.id'
+          from: 'users.id',
+          to: 'emails.user_id'
         }
       }
     }

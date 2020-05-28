@@ -86,7 +86,7 @@ export async function getUserById(id: string) {
 
 export async function getUserByEmail(email: string) {
   try {
-    return await Email.query().where('email', email).withGraphFetched('user').orderBy('user.firstName');
+    return await Email.query().where('email', email).withGraphJoined('user');
   } catch (err) {
     logger.error(err);
   }
@@ -94,7 +94,7 @@ export async function getUserByEmail(email: string) {
 
 export async function getUserByContact(number: string) {
   try {
-    return await Contacts.query().where('contactNumber', number).withGraphFetched('user').orderBy('user.firstName');
+    return await Contacts.query().where('contactNumber', number).eager('user');
   } catch (err) {
     logger.error(err);
   }
@@ -104,8 +104,8 @@ export async function findUserByName(pattern: string) {
   try { 
     return await User.query().where(builder => {
       builder
-      .where(raw('firstName ~ ?', pattern ))
-      .orWhere(raw('lastName ~ ?', pattern ))
+      .where(raw('first_name ~ ?', pattern ))
+      .orWhere(raw('last_name ~ ?', pattern ))
     });
   } catch (err) {
     logger.error(err);
@@ -114,7 +114,7 @@ export async function findUserByName(pattern: string) {
 
 export async function findUserByContact(pattern: string) {
   try { 
-    return await Contacts.query().where(raw('number ~ ?', pattern)).withGraphFetched('user');
+    return await Contacts.query().where(raw('number ~ ?', pattern)).withGraphJoined('user');
   } catch (err) {
     logger.error(err);
   }

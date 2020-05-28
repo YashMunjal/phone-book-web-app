@@ -7,8 +7,10 @@ import {
   insertNumber, 
   insertEmail, 
   getUserById ,
-  contactExists
-
+  contactExists,
+  findUserByContact,
+  findUserByName,
+  getUserByEmail,
 } from '../../services/user.service';
 import logger from '../../services/logger';
 
@@ -31,7 +33,7 @@ export async function handleCreateContact(req: Request, res: Response) {
       firstName,
       lastName,
     }
-    if(contactExists(contactNumber)) return res.status(400).json({error: 'Contact already exsists'});
+    if(await contactExists(contactNumber)) return res.status(400).json({error: 'Contact already exsists'});
     const createdUser = await createUser(user);
     if(!createdUser) throw new Error;
     if(contactNumber) await insertNumber(createdUser, contactNumber);
@@ -94,6 +96,27 @@ export async function handleAddEmail(req: Request, res: Response){
     return res.status(200).json({user: updatedUser});
 
     
+  } catch (error) {
+    logger.error(error)
+  }
+}
+
+export async function handleSearch(req: Request, res: Response) {
+  try {
+    const { email, firstName, lastName, contact } = req.query;
+
+    const searchResults = [];
+
+    if (contact &&  typeof contact === 'string') searchResults.push(await findUserByContact(contact));
+    else if(email && typeof email === 'string') searchResults.push(await getUserByEmail(email))
+    else if (firstName || lastName) {
+      if(typeof firstName === 'string') searchResults.push(await findUserByName(firstName));
+      if(typeof lastName === 'string') searchResults.push(await findUserByName(lastName))
+    }
+    
+    return res.json({results: searchResults})
+
+
   } catch (error) {
     logger.error(error)
   }
