@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "start": "tsc -p . && node dist/index.js",
+    "migrate": "cd src && knex migrate:latest"
   },
   "repository": {
     "type": "git",

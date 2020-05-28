@@ -1,7 +1,7 @@
 // Update with your config settings.
 import { knexSnakeCaseMappers } from 'objection';
 
-export const config = {
+const config = {
 
   development: {
     client: 'pg',
@@ -17,3 +17,5 @@ export const config = {
  
 
 };
+
+export default config;
