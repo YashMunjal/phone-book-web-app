@@ -30,7 +30,7 @@
   "dependencies": {
     "@types/knex": "^0.16.1",
     "express": "^4.17.1",
-    "knex": "^0.21.1",
+    "knex": "^2.4.0",
     "mongoose": "^5.9.16",
     "objection": "^2.1.5",
     "pg": "^8.2.1",
